@@ -15,83 +15,119 @@
                 if(!("end_x" in data)){
                     data["end_x"] = ctx.canvas.clientWidth - data["radius"] * 1.5
                 }
-                if(!("line_width" in data)){
-                    data["line_width"] = 5;
+                if(!("circle_line_width" in data)){
+                    data["circle_line_width"] = 1;
+                }
+                if(!("edge_line_width" in data)){
+                    data["edge_line_width"] = 1;
                 }
                 if(!("title_y" in data)){
                     data["title_y"] = (ctx.canvas.clientHeight - data["radius"])/4;
                 }
+                if(!("items_y_gap" in data)){
+                    data["items_y_gap"] = data["radius"];
+                }
+                if(!("items_y" in data)){
+                    data["items_y"] = data["y"] + data["radius"] + data["items_y_gap"];
+                }
                 if(!("points" in data)){
                     data["points"] = [];
                 }
+                else{
+                    var i
+                    for(i=0;i<data["points"].length;i++){
+                        if(!("title" in data["points"][i])){
+                            data["points"][i]["title"] = ""
+                        }
+                        if(!("items" in data["points"][i])){
+                            data["points"][i]["items"] = []
+                        }
+                    }
+                }
                 this.data = data
+                this.draw_edge = function(x1, x2){
+                    ctx.moveTo(x1, data["y"]-data["radius"]/2);
+                    ctx.lineTo(x2, data["y"]-data["radius"]/2);
+                    ctx.lineWidth = this.data["edge_line_width"];
+                    ctx.stroke();
+                    ctx.moveTo(x1, data["y"]+data["radius"]/2);
+                    ctx.lineTo(x2, data["y"]+data["radius"]/2);
+                    ctx.lineWidth = this.data["edge_line_width"];
+                    ctx.stroke();
+
+                }
                 this.draw_points = function(){
                     if(data["points"].length>1){
                         var i
+                        var points_x = [data["start_x"]]
                         var gap=(data["end_x"] - data["start_x"])/(data["points"].length-1)
                         for(i=1;i<(data["points"].length-1);i++){
                             data["points"][i]
-                            this.draw_a_point(data["start_x"]+(i*gap) , "mid", data["points"][i]["title"])
+                            this.draw_a_point(data["start_x"]+(i*gap) , "mid", data["points"][i]["title"], data["points"][i]["items"])
+                            points_x.push(data["start_x"]+(i*gap));
                         }
-                        this.draw_a_point(data["start_x"], "start", data["points"][0]["title"])
-                        this.draw_a_point(data["end_x"], "end", data["points"][data["points"].length-1]["title"])
+                        points_x.push(data["end_x"]);
+                        this.draw_a_point(data["start_x"], "start", data["points"][0]["title"], data["points"][i]["items"])
+                        this.draw_a_point(data["end_x"], "end", data["points"][data["points"].length-1]["title"], data["points"][i]["items"])
+                        //Draw the edges
+                        for(i=0;i<data["points"].length-1;i++){
+                            this.draw_edge(points_x[i]+data["radius"], points_x[i+1]-data["radius"]);
+                        }
+                        
                     }
                     else{
-                        this.draw_a_point((data["end_x"] - data["start_x"])/2, "only", data["points"][0]["title"])
+                        this.draw_a_point((data["end_x"] - data["start_x"])/2, "only", data["points"][0]["title"], data["points"][i]["items"])
                     }
                 };
-                this.draw_a_point = function(x, loc, title){
+                this.draw_a_point = function(x, loc, title, items){
                     var from_angle, to_angle;
+                    var angle = Math.asin(0.5);
                     if(loc=="start" || loc=="end"){
                         if(loc=="start"){
-                            from_angle = 0.25*Math.PI;
-                            to_angle = 1.75 * Math.PI;
+                            from_angle = angle;//0.25*Math.PI;
+                            to_angle = -angle;//1.75 * Math.PI;
                         }
                         else if(loc=="end"){
-                            from_angle = 1.25*Math.PI;
-                            to_angle = 0.75 * Math.PI;
+                            from_angle = Math.PI + angle;//1.25*Math.PI;
+                            to_angle = Math.PI - angle;//0.75 * Math.PI;
+
                         }
                         ctx.beginPath();
-                        ctx.arc(x,this.data["y"],this.data["radius"],0,2*Math.PI);
-                        ctx.lineWidth = this.data["line_width"];
+                        ctx.arc(x,this.data["y"],this.data["radius"],from_angle,to_angle);
+                        ctx.lineWidth = this.data["circle_line_width"];
                         ctx.stroke();
                     }
                     else if(loc=="only"){
                         ctx.beginPath();
                         ctx.arc(x,this.data["y"],this.data["radius"],0, 2 * Math.PI);
-                        ctx.lineWidth = this.data["line_width"];
+                        ctx.lineWidth = this.data["circle_line_width"];
                         ctx.stroke();
                     }
                     else{
                         ctx.beginPath();
-                        ctx.arc(x,this.data["y"],this.data["radius"],0.25*Math.PI, 0.75 * Math.PI);
-                        ctx.lineWidth = this.data["line_width"];
+                        //ctx.arc(x,this.data["y"],this.data["radius"],0.25*Math.PI, 0.75 * Math.PI);
+                        ctx.arc(x,this.data["y"],this.data["radius"], angle, Math.PI - angle);
+                        ctx.lineWidth = this.data["circle_line_width"];
                         ctx.stroke();
                         ctx.beginPath();
-                        ctx.arc(x,this.data["y"],this.data["radius"],1.25*Math.PI, 1.75 * Math.PI);
-                        ctx.lineWidth = this.data["line_width"];
+                        //ctx.arc(x,this.data["y"],this.data["radius"],1.25*Math.PI, 1.75 * Math.PI);
+                        ctx.arc(x,this.data["y"],this.data["radius"], Math.PI + angle, -angle);
+                        ctx.lineWidth = this.data["circle_line_width"];
                         ctx.stroke();
                     }
                     ctx.font = "15px Comic Sans MS";
                     ctx.fillStyle = "red";
                     ctx.textAlign = "center";
                     ctx.fillText(title, x, this.data["title_y"]);
+                    var i
+                    ctx.font = "10px Comic Sans MS";
+                    ctx.fillStyle = "green";
+                    ctx.textAlign = "center";
+                    for(i=0;i<items.length;i++){
+                        ctx.fillText(items[i], x, this.data["items_y"]+ (i * data["items_y_gap"]));
+                    }
                 };
             }
-            function d(ctx, data){
-                ctx.beginPath();
-                ctx.arc(95,50,40,0,2*Math.PI);
-                ctx.stroke();
-            }
-            function draw_circle(){
-            
-            }
-        function draw_circle_start(ctx){
-           ctx.beginPath();
-           ctx.arc(100, 75, 50, 0.25*Math.PI, 1.75 * Math.PI);
-           ctx.stroke();
-        }
-            
         </script>
     </head>
     <body>
