@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            function OutlineGraph(ctx, data){
+                if(!("radius" in data)){
+                    data["radius"] = 25;
+                }
+                if(!("y" in data)){
+                    data["y"] = ctx.canvas.clientHeight/2
+                }
+                if(!("start_x" in data)){
+                    data["start_x"] = data["radius"]
+                }
+                if(!("end_x" in data)){
+                    data["end_x"] = ctx.canvas.clientWidth - data["radius"]
+                }
+                if(!("line_width" in data)){
+                    data["line_width"] = 5;
+                }
+                if(!("points" in data)){
+                    data["points"] = [];
+                }
+                this.data = data
+                this.draw_points = function(){
+                    if(data["points"].length>1){
+                        var i
+                        var gap=(data["end_x"] - data["start_x"])/(data["points"].length-1)
+                        console.log(data);
+                        console.log("gap: "+gap);
+                        for(i=1;i<(data["points"].length-1);i++){
+                            data["points"][i]
+                            this.draw_a_point(data["start_x"]+(i*gap) , "mid")
+                        }
+                        this.draw_a_point(data["start_x"], "start")
+                        this.draw_a_point(data["end_x"], "end")
+                    }
+                    else{
+                        this.draw_a_point((data["end_x"] - data["start_x"])/2, "only")
+                    }
+                };
+                this.draw_a_point = function(x, loc){
+                    var from_angle, to_angle;
+                    if(loc=="start" || loc=="end"){
+                        if(loc=="start"){
+                            from_angle = 0.25*Math.PI;
+                            to_angle = 1.75 * Math.PI;
+                        }
+                        else if(loc=="end"){
+                            from_angle = 1.25*Math.PI;
+                            to_angle = 0.75 * Math.PI;
+                        }
+                        ctx.beginPath();
+                        ctx.arc(x,this.data["y"],this.data["radius"],0,2*Math.PI);
+                        ctx.lineWidth = this.data["line_width"];
+                        ctx.stroke();
+                    }
+                    else if(loc=="only"){
+                        ctx.beginPath();
+                        ctx.arc(x,this.data["y"],this.data["radius"],0, 2 * Math.PI);
+                        ctx.lineWidth = this.data["line_width"];
+                        ctx.stroke();
+                    }
+                    else{
+                        ctx.beginPath();
+                        ctx.arc(x,this.data["y"],this.data["radius"],0.25*Math.PI, 0.75 * Math.PI);
+                        ctx.lineWidth = this.data["line_width"];
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(x,this.data["y"],this.data["radius"],1.25*Math.PI, 1.75 * Math.PI);
+                        ctx.lineWidth = this.data["line_width"];
+                        ctx.stroke();
+                    }
+                };
+            }
+            function d(ctx, data){
+                ctx.beginPath();
+                ctx.arc(95,50,40,0,2*Math.PI);
+                ctx.stroke();
+            }
+            function draw_circle(){
+            
+            }
+        function draw_circle_start(ctx){
+           ctx.beginPath();
+           ctx.arc(100, 75, 50, 0.25*Math.PI, 1.75 * Math.PI);
+           ctx.stroke();
+        }
+            
+        </script>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="600" height="200"
+                                          style="border:1px solid #d3d3d3;">
+            Your browser does not support the canvas element.
+        </canvas>
+        <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var data = [
+            {"title": "point1", "items": ["item1", "item2"]}
+        ]
+        //d(ctx, data);
+        //draw_circle_start(ctx)
+        var g = new OutlineGraph(ctx, {
+                                 "points": [
+                                    {"title": "my title", "items": ["item1", "item2"]},
+                                     {"title": "frutas", "items": ["manzana", "naranja"]},
+                                     {"title": "vegetales", "items": ["lechuga", "Zanahoria"]},
+                                    {"title": "fruits", "items": ["apple", "orange"]}
+                                 ]});
+        g.draw_points();
+        </script>
+    </body>
+
+</html>
+    
