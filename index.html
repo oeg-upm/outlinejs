@@ -10,13 +10,16 @@
                     data["y"] = ctx.canvas.clientHeight/2
                 }
                 if(!("start_x" in data)){
-                    data["start_x"] = data["radius"]
+                    data["start_x"] = data["radius"] * 1.5
                 }
                 if(!("end_x" in data)){
-                    data["end_x"] = ctx.canvas.clientWidth - data["radius"]
+                    data["end_x"] = ctx.canvas.clientWidth - data["radius"] * 1.5
                 }
                 if(!("line_width" in data)){
                     data["line_width"] = 5;
+                }
+                if(!("title_y" in data)){
+                    data["title_y"] = (ctx.canvas.clientHeight - data["radius"])/4;
                 }
                 if(!("points" in data)){
                     data["points"] = [];
@@ -26,20 +29,18 @@
                     if(data["points"].length>1){
                         var i
                         var gap=(data["end_x"] - data["start_x"])/(data["points"].length-1)
-                        console.log(data);
-                        console.log("gap: "+gap);
                         for(i=1;i<(data["points"].length-1);i++){
                             data["points"][i]
-                            this.draw_a_point(data["start_x"]+(i*gap) , "mid")
+                            this.draw_a_point(data["start_x"]+(i*gap) , "mid", data["points"][i]["title"])
                         }
-                        this.draw_a_point(data["start_x"], "start")
-                        this.draw_a_point(data["end_x"], "end")
+                        this.draw_a_point(data["start_x"], "start", data["points"][0]["title"])
+                        this.draw_a_point(data["end_x"], "end", data["points"][data["points"].length-1]["title"])
                     }
                     else{
-                        this.draw_a_point((data["end_x"] - data["start_x"])/2, "only")
+                        this.draw_a_point((data["end_x"] - data["start_x"])/2, "only", data["points"][0]["title"])
                     }
                 };
-                this.draw_a_point = function(x, loc){
+                this.draw_a_point = function(x, loc, title){
                     var from_angle, to_angle;
                     if(loc=="start" || loc=="end"){
                         if(loc=="start"){
@@ -71,6 +72,10 @@
                         ctx.lineWidth = this.data["line_width"];
                         ctx.stroke();
                     }
+                    ctx.font = "15px Comic Sans MS";
+                    ctx.fillStyle = "red";
+                    ctx.textAlign = "center";
+                    ctx.fillText(title, x, this.data["title_y"]);
                 };
             }
             function d(ctx, data){
@@ -97,6 +102,7 @@
         <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
+        ctx.canvas.width  = window.innerWidth;
         var data = [
             {"title": "point1", "items": ["item1", "item2"]}
         ]
