@@ -46,39 +46,36 @@
                 }
                 this.data = data
                 this.draw_edge = function(x1, x2){
-                    ctx.moveTo(x1, data["y"]-data["radius"]/2);
-                    ctx.lineTo(x2, data["y"]-data["radius"]/2);
+                    ctx.moveTo(x1, this.data["y"]-this.data["radius"]/2);
+                    ctx.lineTo(x2, this.data["y"]-this.data["radius"]/2);
                     ctx.lineWidth = this.data["edge_line_width"];
                     ctx.stroke();
-                    ctx.moveTo(x1, data["y"]+data["radius"]/2);
-                    ctx.lineTo(x2, data["y"]+data["radius"]/2);
+                    ctx.moveTo(x1, this.data["y"]+this.data["radius"]/2);
+                    ctx.lineTo(x2, this.data["y"]+this.data["radius"]/2);
                     ctx.lineWidth = this.data["edge_line_width"];
                     ctx.stroke();
-
                 }
                 this.draw_points = function(){
-                    if(data["points"].length>1){
+                    if(this.data["points"].length>1){
                         var i
-                        var points_x = [data["start_x"]]
+                        var points_x = [this.data["start_x"]]
                         var gap=(data["end_x"] - data["start_x"])/(data["points"].length-1)
                         for(i=1;i<(data["points"].length-1);i++){
-                            data["points"][i]
-                            this.draw_a_point(data["start_x"]+(i*gap) , "mid", data["points"][i]["title"], data["points"][i]["items"])
-                            points_x.push(data["start_x"]+(i*gap));
+                            this.draw_a_point(this.data["start_x"]+(i*gap) , "mid", this.data["points"][i]["title"], this.data["points"][i]["items"])
+                            points_x.push(this.data["start_x"]+(i*gap));
                         }
-                        points_x.push(data["end_x"]);
-                        this.draw_a_point(data["start_x"], "start", data["points"][0]["title"], data["points"][i]["items"])
-                        this.draw_a_point(data["end_x"], "end", data["points"][data["points"].length-1]["title"], data["points"][i]["items"])
+                        points_x.push(this.data["end_x"]);
+                        this.draw_a_point(this.data["start_x"], "start", this.data["points"][0]["title"], this.data["points"][i]["items"])
+                        this.draw_a_point(this.data["end_x"], "end", this.data["points"][this.data["points"].length-1]["title"], this.data["points"][i]["items"])
                         //Draw the edges
-                        for(i=0;i<data["points"].length-1;i++){
-                            this.draw_edge(points_x[i]+data["radius"], points_x[i+1]-data["radius"]);
+                        for(i=0;i<this.data["points"].length-1;i++){
+                            this.draw_edge(points_x[i]+this.data["radius"], points_x[i+1]-this.data["radius"]);
                         }
-                        
                     }
                     else{
-                        this.draw_a_point((data["end_x"] - data["start_x"])/2, "only", data["points"][0]["title"], data["points"][i]["items"])
+                        this.draw_a_point((this.data["end_x"] - this.data["start_x"])/2, "only", this.data["points"][0]["title"], this.data["points"][i]["items"])
                     }
-                };
+                };// draw points
                 this.draw_a_point = function(x, loc, title, items){
                     var from_angle, to_angle;
                     var angle = Math.asin(0.5);
@@ -126,7 +123,67 @@
                     for(i=0;i<items.length;i++){
                         ctx.fillText(items[i], x, this.data["items_y"]+ (i * data["items_y_gap"]));
                     }
-                };
+                };//  draw a point
+                
+                
+                
+                
+                this.draw_an_inner_edge = function(x1, x2){
+                    ctx.beginPath();
+                    ctx.moveTo(x1, this.data["y"]);
+                    ctx.lineTo(x2, this.data["y"]);
+                    ctx.lineWidth = this.data["radius"] * 0.5;
+                    ctx.strokeStyle = "green";
+                    ctx.stroke();
+                }
+                
+                this.draw_inner_edges = function(index){
+                    var gap=(this.data["end_x"] - this.data["start_x"])/(this.data["points"].length-1)
+                    for(i=0;i<index;i++){
+                    //for(i=0;i<this.data["points"].length-1;i++){
+                        // with gap between the point and the edge
+                        //this.draw_an_inner_edge(this.data["start_x"]+(i*gap)+this.data["radius"], this.data["start_x"]+((i+1)*gap)-this.data["radius"]);
+                        // with no gap between the point and the edge
+                        this.draw_an_inner_edge(this.data["start_x"]+(i*gap), this.data["start_x"]+((i+1)*gap));
+                        /*
+                        if(i == this.data["points"].length-1){
+                            this.draw_an_inner_edge(this.data["start_x"]+(i*gap), this.data["start_x"]+((i+1)*gap));
+                        }
+                        else{
+                            this.draw_an_inner_edge(this.data["start_x"]+(i*gap), this.data["start_x"]+((i+1)*gap-this.data["radius"]));
+                        }
+                         */
+                    }
+                }
+                
+                this.draw_an_inner_point = function(x){
+                    ctx.beginPath();
+                    ctx.arc(x,this.data["y"],this.data["radius"]*0.6,0, 2 * Math.PI);
+                    ctx.fillStyle = "green";
+                    ctx.lineWidth = this.data["circle_line_width"];
+                    ctx.fill();
+                };//  draw an inner point
+                
+                this.draw_inner_points = function(index){
+                    var gap=(this.data["end_x"] - this.data["start_x"])/(this.data["points"].length-1)
+                    var i
+                    for(i=0;i<index;i++){
+                        this.draw_an_inner_point(this.data["start_x"]+(i*gap));
+                    }
+                };// draw inner points
+                this.draw_inner = function(index){
+                    this.draw_inner_points(index);
+                    this.draw_inner_edges(index-1);
+                }
+                 this.draw = function(){
+                     this.draw_points();
+                     //this.draw_inner(index);
+                 }
+                
+                
+                
+                
+                
             }
         </script>
     </head>
@@ -151,7 +208,9 @@
                                      {"title": "vegetales", "items": ["lechuga", "Zanahoria"]},
                                     {"title": "fruits", "items": ["apple", "orange"]}
                                  ]});
-        g.draw_points();
+        //g.draw_points();
+        g.draw();
+        g.draw_inner(2);
         </script>
     </body>
 
