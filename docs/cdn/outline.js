@@ -1,4 +1,10 @@
 function OutlineGraph(ctx, data){
+    if(!("title_font" in data)){
+        data["title_font"] = "15px Comic Sans MS";
+    }
+    if(!("items_font" in data)){
+        data["items_font"] = "10px Comic Sans MS";
+    }
     if(!("title_color" in data)){
         data["title_color"] = 'red';
     }
@@ -72,7 +78,7 @@ function OutlineGraph(ctx, data){
                 points_x.push(this.data["start_x"]+(i*gap));
             }
             points_x.push(this.data["end_x"]);
-            this.draw_a_point(this.data["start_x"], "start", this.data["points"][0]["title"], this.data["points"][i]["items"])
+            this.draw_a_point(this.data["start_x"], "start", this.data["points"][0]["title"], this.data["points"][0]["items"])
             this.draw_a_point(this.data["end_x"], "end", this.data["points"][this.data["points"].length-1]["title"], this.data["points"][i]["items"])
             //Draw the edges
             for(i=0;i<this.data["points"].length-1;i++){
@@ -117,21 +123,26 @@ function OutlineGraph(ctx, data){
             this.ctx.lineWidth = this.data["circle_line_width"];
             this.ctx.stroke();
         }
-        this.ctx.font = "15px Comic Sans MS";
+        this.draw_items(title, items, x);
+    };//  draw a point
+    
+    this.draw_items = function(title, items, x){
+        this.ctx.beginPath();
+        //this.ctx.font = "15px Comic Sans MS";
+        this.ctx.font = this.data["title_font"];
         this.ctx.fillStyle = this.data["title_color"];
         this.ctx.textAlign = "center";
         this.ctx.fillText(title, x, this.data["title_y"]);
         var i
-        this.ctx.font = "10px Comic Sans MS";
+        this.ctx.beginPath();
+        //this.ctx.font = "10px Comic Sans MS";
+        this.ctx.font = this.data["items_font"];
         this.ctx.fillStyle = this.data["items_color"];
         this.ctx.textAlign = "center";
         for(i=0;i<items.length;i++){
-            this.ctx.fillText(items[i], x, this.data["items_y"]+ (i * data["items_y_gap"]));
+            this.ctx.fillText(items[i], x, this.data["items_y"]+ (i * this.data["items_y_gap"]));
         }
-    };//  draw a point
-    
-    
-    
+    }
     
     this.draw_an_inner_edge = function(x1, x2){
         this.ctx.beginPath();
