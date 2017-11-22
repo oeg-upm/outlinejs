@@ -1,6 +1,7 @@
 # outlinejs
 Draw an outline or roadmap for a workflow
 
+![Alt text](/docs/outline_screenshot.png?raw=true "outlinejs")
 
 You can use outlinejs directly from GitHub
 ```

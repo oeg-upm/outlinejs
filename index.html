@@ -12,18 +12,19 @@
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         ctx.canvas.width  = window.innerWidth;
-        var data = [
-            {"title": "point1", "items": ["item1", "item2"]}
-        ]
         var g = new OutlineGraph(ctx, {
-                                 "title_color": "blue",
-                                 "items_color": "red",
-                                 "inner_color": "yellow",
+                                 "title_color": "black",
+                                 "items_color": "blue",
+                                 "inner_color": "red",
                                  "points": [
-                                    {"title": "my title", "items": ["item1", "item2"]},
-                                     {"title": "frutas", "items": ["manzana", "naranja"]},
-                                     {"title": "vegetales", "items": ["lechuga", "Zanahoria"]},
-                                    {"title": "fruits", "items": ["apple", "orange"]}
+                                    //{"title": "my title", "items": ["item1", "item2"]},
+                                     //{"title": "frutas", "items": ["manzana", "naranja"]},
+                                     //{"title": "vegetales", "items": ["lechuga", "Zanahoria"]},
+                                    //{"title": "fruits", "items": ["apple", "orange"]}
+                                    {"title": "step1", "items": ["step 1 a","step 1 b" ]},
+                                    {"title": "step2", "items": ["step 2 a","step 2 b" ]},
+                                    {"title": "step3", "items": ["step 3 a","step 3 b" ]},
+                                    {"title": "step4", "items": ["step 4 a","step 4 b" ]},
                                  ]});
         g.draw();
         g.draw_inner(2);
